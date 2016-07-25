@@ -3,10 +3,9 @@ require 'discordrb'
 
 class Trivia
 
-  attr_accessor :bot, :channel
+  attr_accessor :bot
 
   def initialize()
-    @channel = nil
     json = File.read('config.json')
     config = JSON.parse(json)
 
@@ -20,21 +19,20 @@ class Trivia
 
   def start
     @running = true;
-    generate_question
+    #@bot.add_await(:stop, Discordrb::Events::MessageEvent) {|event|
+    #  if event.content == config['prefix']+"trivia stop" && @running == true then
+    #    @running = false
+    #    "Stopping"
+    #  end
+    #}
+    loop do
+      input = gets.chomp
+      print input
+    end
   end
 
   def stop
     @running = false;
-  end
-
-  def generate_question
-    @bot.send_message(@channel, "What is Foo")
-    @bot.add_await(:question, Discordrb::Events::MessageEvent, {content: "Bar"}) do |event|
-      @bot.send_message(@channel, "Correct")
-      if @running != false 
-        generate_question
-      end
-    end
   end
 
 end

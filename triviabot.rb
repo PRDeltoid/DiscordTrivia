@@ -1,29 +1,24 @@
 require 'discordrb'
-require 'json'
-require './trivia.rb'
+require_relative 'trivia'
 
-json = File.read('config.json')
-config = JSON.parse(json)
 
-bot = Discordrb::Commands::CommandBot.new(
-  token: config['token'],
-  application_id: config['appid'],
-  prefix: config['prefix'] 
-)
+trivia = Trivia.new()
 
-trivia = Trivia.new(bot);
-
-bot.command :trivia do |event, command|
+trivia.bot.command :trivia do |event, command|
   case command 
     when "start"
-      "Starting"
+      trivia.channel = event.channel.id
+      trivia.bot.send_message(trivia.channel, "Starting")
       trivia.start
+    when "stop"
+      trivia.stop
+      "Stopping"
     else 
       "Unknown Command"
   end
 end
 
 
-bot.run
+trivia.bot.run
 
 
