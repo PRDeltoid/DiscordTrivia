@@ -5,12 +5,12 @@ triviabot = Bot.new(:config_file => 'config.json')
 triviabot.bot.command :trivia do |event, command|
   case command 
     when "start"
-      "Starting"
       triviabot.channel = event.channel.id
       triviabot.start
+      return
     when "stop"
-      "Stopping"
       triviabot.stop
+      return
     else 
       "Unknown Command"
   end
