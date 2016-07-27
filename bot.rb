@@ -22,14 +22,24 @@ class Bot
     @running = false
   end
 
+  def running?
+    self.running ? true : false
+  end
+
   def start
-    send_message "Starting"
-    running = true;
-    setup_question(trivia.get_question)
+    #only run this method if trivia is NOT already running
+    if not running?
+      self.running = true
+      send_message "Starting"
+      setup_question(trivia.get_question)
+    end
   end
 
   def stop
-    running = false;
+    #only run this method if trivia is already running
+    if running?
+      self.running = false
+    end
   end
 
   def setup_question(question)
