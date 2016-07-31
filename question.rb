@@ -7,10 +7,18 @@ class Question
 
     @question = args[:question]
     @answer   = args[:answer]
+    @hints    = args[:hints]
   end
 
   def defaults
-    {:question => "This is an example question",
-     :answer   => "This is an example answer"}
+    {
+     :question => "This is an example question",
+     :answer   => "This is an example answer",
+     :hints    => ["Hint 1", "Hint 2"]
+    }
+  end
+
+  def next_hint
+    self.hints.shift
   end
 end

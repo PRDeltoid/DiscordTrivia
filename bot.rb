@@ -3,7 +3,7 @@ require 'discordrb'
 require_relative 'trivia'
 
 class Bot 
-  attr_accessor :bot, :trivia, :channel, :running
+  attr_accessor :bot, :trivia, :channel, :running, :timers
 
   def initialize(args)
     #read in Discord bot API details
