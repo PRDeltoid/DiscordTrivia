@@ -1,15 +1,17 @@
 require_relative 'question'
+require_relative 'database'
 
 class QuestionFactory
-  attr_reader :api_endpoint
+  attr_reader :api_endpoint, :database
 
   def initialize(api_endpoint)
     @api_endpoint
+    @database = Database.new
   end
 
-  #Temporary hardcoding of a simple question (no api/database in use yet)
   def new_question
-    Question.new(:question => "What is Foo?", :answer=> "Bar", :hints => generate_hints("Bar"))
+    question = database.random_row.first
+    return Question.new(:question => question["question"], :answer=> question["answer"], :hints => generate_hints("Bar"))
   end
 
   #Temporary hardcoding of simple hints for above question.

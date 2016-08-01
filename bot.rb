@@ -52,7 +52,7 @@ class Bot
     end
   end
 
-  def setup_question()
+  def setup_question
     question = trivia.get_question
     messenger.send_message(question.question)
 
