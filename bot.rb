@@ -1,9 +1,11 @@
 require 'json'
 require 'discordrb'
 require_relative 'trivia'
+require_relative 'messenger'
+#require_relative 'score'
 
 class Bot 
-  attr_accessor :bot, :trivia, :channel, :running, :timers
+  attr_accessor :bot, :trivia, :channel, :running, :messenger
 
   def initialize(args)
     #read in Discord bot API details
@@ -30,8 +32,10 @@ class Bot
     #only run this method if trivia is NOT already running
     if not running?
       self.running = true
-      send_message "Starting"
-      setup_question(trivia.get_question)
+      @messenger = Messenger.new(self)
+      messenger.send_message "Starting"
+  
+      setup_question
     end
   end
 
@@ -42,16 +46,14 @@ class Bot
     end
   end
 
-  def setup_question(question)
-    send_message(question.question)
+  def setup_question()
+    question = trivia.get_question
+    messenger.send_message(question.question)
 
     bot.add_await(:question, Discordrb::Events::MessageEvent, {content: question.answer}) do |event|
-      send_message "Correct"
+      messenger.send_message "Correct #{event.user.display_name}."
+      self.trivia.get_question.answered = true
     end
-  end
-
-  def send_message(message)
-    bot.send_message(channel, message)
   end
 
 end
