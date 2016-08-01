@@ -1,5 +1,6 @@
 class Question
   attr_reader :question, :answer
+  attr_accessor :answered
 
   def initialize(args)
     #Create defaults if no value exists
@@ -8,6 +9,7 @@ class Question
     @question = args[:question]
     @answer   = args[:answer]
     @hints    = args[:hints]
+    @answered = false
   end
 
   def defaults
@@ -20,5 +22,13 @@ class Question
 
   def next_hint
     self.hints.shift
+  end
+
+  def mark_answered
+    self.answered = true
+  end
+
+  def answered?
+    return answered
   end
 end

@@ -1,11 +1,11 @@
 require 'json'
 require 'discordrb'
+require 'rufus-scheduler'
 require_relative 'trivia'
 require_relative 'messenger'
-#require_relative 'score'
 
 class Bot 
-  attr_accessor :bot, :trivia, :channel, :running, :messenger
+  attr_accessor :bot, :trivia, :channel, :running, :messenger, :scheduler
 
   def initialize(args)
     #read in Discord bot API details
@@ -22,6 +22,7 @@ class Bot
     @trivia = Trivia.new
     @channel = nil
     @running = false
+    @scheduler = Rufus::Scheduler.new
   end
 
   def running?
@@ -34,8 +35,13 @@ class Bot
       self.running = true
       @messenger = Messenger.new(self)
       messenger.send_message "Starting"
-  
       setup_question
+      scheduler.every '2s' do 
+        if trivia.get_question.answered?
+          trivia.next_question
+          setup_question
+        end
+      end
     end
   end
 
@@ -52,7 +58,7 @@ class Bot
 
     bot.add_await(:question, Discordrb::Events::MessageEvent, {content: question.answer}) do |event|
       messenger.send_message "Correct #{event.user.display_name}."
-      self.trivia.get_question.answered = true
+      trivia.get_question.mark_answered
     end
   end
 

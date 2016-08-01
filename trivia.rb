@@ -11,14 +11,14 @@ class Trivia
   def get_question
     #Generate question if none exists
     if current_question == nil then
-      current_question = question_factory.new_question
+      self.current_question = question_factory.new_question
     else
       current_question
     end
   end
 
   def next_question
-    current_question = question_factory.new_question
+    self.current_question = question_factory.new_question
   end
 
 end
