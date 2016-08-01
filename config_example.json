@@ -1,0 +1,9 @@
+{
+  "appid": <appid>,
+  "token": "<token>",
+  "prefix": "!",
+  "database": "<trivia database name>",
+  "username": "<sql database username>",
+  "password": "<sql database password>",
+  "question_table": "<database trivia table name>"
+}
