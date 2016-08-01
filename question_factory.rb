@@ -2,10 +2,9 @@ require_relative 'question'
 require_relative 'database'
 
 class QuestionFactory
-  attr_reader :api_endpoint, :database
+  attr_reader :database
 
-  def initialize(api_endpoint)
-    @api_endpoint
+  def initialize
     @database = Database.new
   end
 

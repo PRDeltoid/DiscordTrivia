@@ -4,7 +4,7 @@ class Trivia
   attr_accessor :question_factory, :current_question
 
   def initialize()
-    @question_factory = QuestionFactory.new("")
+    @question_factory = QuestionFactory.new
     @current_question = nil
   end
 
