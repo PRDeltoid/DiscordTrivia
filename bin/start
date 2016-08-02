@@ -1,9 +1,15 @@
-require_relative 'bot'
+#!/usr/bin/env ruby
+$LOAD_PATH << 'lib'
 
-triviabot = Bot.new(:config_file => 'config.json')
+require 'bot'
+require 'config'
+
+$config = Configuration.new('config.json')
+
+triviabot = Bot.new#(:config_file => 'config.json')
 
 triviabot.bot.command :trivia do |event, command|
-  case command 
+  case command
     when "start"
       triviabot.channel = event.channel.id
       triviabot.start
@@ -11,7 +17,7 @@ triviabot.bot.command :trivia do |event, command|
     when "stop"
       triviabot.stop
       return
-    else 
+    else
       "Unknown Command"
   end
 end

@@ -3,20 +3,17 @@ require 'discordrb'
 require 'rufus-scheduler'
 require_relative 'trivia'
 require_relative 'messenger'
+require_relative 'config'
 
-class Bot 
-  attr_accessor :bot, :trivia, :channel, :running, :messenger, :scheduler
+class Bot
+  attr_accessor :config, :bot, :trivia, :channel, :running, :messenger, :scheduler
 
-  def initialize(args)
-    #read in Discord bot API details
-    json = File.read(args.fetch(:config_file, 'config.json'))
-    config = JSON.parse(json)
-
+  def initialize#(args)
     #generate bot
     @bot = Discordrb::Commands::CommandBot.new(
-      token: config['token'],
-      application_id: config['appid'],
-      prefix: config['prefix'] 
+      token: $config.get('token'),
+      application_id: $config.get('appid'),
+      prefix: $config.get('prefix')
     )
 
     @trivia = Trivia.new
@@ -36,7 +33,7 @@ class Bot
       @messenger = Messenger.new(self)
       messenger.send_message "Starting"
       setup_question
-      scheduler.every '2s' do 
+      scheduler.every '2s' do
         if trivia.get_question.answered?
           trivia.next_question
           setup_question
@@ -49,6 +46,7 @@ class Bot
     #only run this method if trivia is already running
     if running?
       self.running = false
+      scheduler.shutdown
     end
   end
 
@@ -57,8 +55,10 @@ class Bot
     messenger.send_message(question.question)
 
     bot.add_await(:question, Discordrb::Events::MessageEvent, {content: question.answer}) do |event|
-      messenger.send_message "Correct #{event.user.display_name}."
-      trivia.get_question.mark_answered
+      if running?
+        messenger.send_message "Correct #{event.user.display_name}."
+        trivia.get_question.mark_answered
+      end
     end
   end
 
