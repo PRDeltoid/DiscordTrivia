@@ -21,4 +21,12 @@ class Trivia
     self.current_question = question_factory.new_question
   end
 
+  def mark_answered
+    current_question.mark_answered
+  end
+
+  def answered?
+    return current_question.answered?
+  end
+
 end

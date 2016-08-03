@@ -12,4 +12,8 @@ class Messenger
     bot.send_message(channel, message)
   end
 
+  def set_channel(channel)
+    self.channel = channel
+  end
+
 end

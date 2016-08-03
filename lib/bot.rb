@@ -6,9 +6,9 @@ require_relative 'messenger'
 require_relative 'config'
 
 class Bot
-  attr_accessor :config, :bot, :trivia, :channel, :running, :messenger, :scheduler
+  attr_accessor :bot, :trivia, :channel, :running, :messenger, :scheduler
 
-  def initialize#(args)
+  def initialize
     #generate bot
     @bot = Discordrb::Commands::CommandBot.new(
       token: $config.get('token'),
@@ -20,6 +20,7 @@ class Bot
     @channel = nil
     @running = false
     @scheduler = Rufus::Scheduler.new
+    @messenger = Messenger.new(self)
   end
 
   def running?
@@ -30,15 +31,18 @@ class Bot
     #only run this method if trivia is NOT already running
     if not running?
       self.running = true
-      @messenger = Messenger.new(self)
-      messenger.send_message "Starting"
+      messenger.set_channel(channel)
+      messenger.send_message("Starting")
+
       setup_question
+
       scheduler.every '2s' do
-        if trivia.get_question.answered?
+        if trivia.answered?
           trivia.next_question
           setup_question
         end
       end
+
     end
   end
 
@@ -56,8 +60,8 @@ class Bot
 
     bot.add_await(:question, Discordrb::Events::MessageEvent, {content: question.answer}) do |event|
       if running?
-        messenger.send_message "Correct #{event.user.display_name}."
-        trivia.get_question.mark_answered
+        messenger.send_message("Correct #{event.user.display_name}.")
+        trivia.mark_answered
       end
     end
   end

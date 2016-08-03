@@ -6,7 +6,7 @@ require 'config'
 
 $config = Configuration.new('config.json')
 
-triviabot = Bot.new#(:config_file => 'config.json')
+triviabot = Bot.new
 
 triviabot.bot.command :trivia do |event, command|
   case command
