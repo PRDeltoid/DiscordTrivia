@@ -56,9 +56,20 @@ class Bot
 
   def setup_question
     question = trivia.get_question
+
+    p question.answer
+
+    #Ask the question
     messenger.send_message(question.question)
 
-    bot.add_await(:question, Discordrb::Events::MessageEvent, {content: question.answer}) do |event|
+    #Question Timeout Timer
+    scheduler.in '1m' do
+      messenger.send_message("Times up! The answer was #{question.answer}")
+      trivia.mark_answered
+    end
+
+    #Answer event trigger
+    bot.add_await(:question, Discordrb::Events::MessageEvent, {content: /#{question.answer}/i}) do |event|
       if running?
         messenger.send_message("Correct #{event.user.display_name}.")
         trivia.mark_answered
