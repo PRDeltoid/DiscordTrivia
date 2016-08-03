@@ -1,15 +1,21 @@
 require_relative 'question'
 require_relative 'database'
+#require 'random'
 
 class QuestionFactory
-  attr_reader :database
+  attr_reader :database, :random
 
   def initialize
     @database = Database.new
+    self.database.connect
   end
 
   def new_question
-    question = database.random_row.first
+    #Get a random number
+    random_row = Random.rand(database.question_count)
+    #Find row with id = to previous number
+    question = database.select_row(random_row)
+
     return Question.new(:question => question["question"], :answer=> question["answer"], :hints => generate_hints("Bar"))
   end
 
