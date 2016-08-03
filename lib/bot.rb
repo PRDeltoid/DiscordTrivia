@@ -57,13 +57,13 @@ class Bot
   def setup_question
     question = trivia.get_question
 
-    p question.answer
+    #p question.answer
 
     #Ask the question
     messenger.send_message(question.question)
 
     #Question Timeout Timer
-    scheduler.in '1m' do
+    timeout = scheduler.in '1m' do
       messenger.send_message("Times up! The answer was #{question.answer}")
       trivia.mark_answered
     end
@@ -73,8 +73,10 @@ class Bot
       if running?
         messenger.send_message("Correct #{event.user.display_name}.")
         trivia.mark_answered
+        scheduler.unschedule(timeout)
       end
     end
+
   end
 
 end
