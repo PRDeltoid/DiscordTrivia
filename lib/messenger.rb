@@ -1,15 +1,14 @@
 require 'discordrb'
 
 class Messenger
-  attr_accessor :bot, :channel
+  attr_accessor :discord_bot, :channel
 
-  def initialize(bot)
-    @bot = bot.bot
-    @channel = bot.channel
+  def initialize(trivia_bot)
+    @discord_bot = trivia_bot.bot
   end
 
   def send_message(message)
-    bot.send_message(channel, message)
+    discord_bot.send_message(channel, message)
   end
 
   def set_channel(channel)

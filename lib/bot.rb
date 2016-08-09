@@ -6,7 +6,12 @@ require_relative 'messenger'
 require_relative 'config'
 
 class Bot
-  attr_accessor :bot, :trivia, :channel, :running, :messenger, :scheduler
+  attr_accessor :bot, 
+                :trivia,
+                :running, 
+                :scheduler
+
+  attr_reader   :messenger
 
   def initialize
     #generate bot
@@ -17,10 +22,24 @@ class Bot
     )
 
     @trivia = Trivia.new
-    @channel = nil
     @running = false
     @scheduler = Rufus::Scheduler.new
     @messenger = Messenger.new(self)
+
+    bot.command :trivia do |event, command|
+      channel_id = event.channel.id
+      case command
+        when "start"
+          messenger.set_channel(channel_id)
+          start
+          return
+        when "stop"
+          stop
+          return
+        else
+          "Unknown Command"
+      end
+    end
   end
 
   def running?
@@ -31,7 +50,6 @@ class Bot
     #only run this method if trivia is NOT already running
     if not running?
       self.running = true
-      messenger.set_channel(channel)
       messenger.send_message("Starting")
 
       setup_question
@@ -49,6 +67,7 @@ class Bot
   def stop
     #only run this method if trivia is already running
     if running?
+      messenger.send_message("Stopping")
       self.running = false
       scheduler.shutdown
     end
