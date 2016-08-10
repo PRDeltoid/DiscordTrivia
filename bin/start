@@ -8,5 +8,4 @@ $config = Configuration.new('config.json')
 
 triviabot = Bot.new
 
-
-triviabot.bot.run
+triviabot.command_bot.run
