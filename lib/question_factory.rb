@@ -1,12 +1,12 @@
 require_relative 'question'
-require_relative 'database'
+require_relative 'question_database'
 #require 'random'
 
 class QuestionFactory
   attr_reader :database, :random
 
   def initialize
-    @database = Database.new
+    @database = Question_Database.new
     self.database.connect
   end
 
