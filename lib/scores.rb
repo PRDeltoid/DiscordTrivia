@@ -1,8 +1,8 @@
 require 'discordrb'
 require_relative 'score'
+require_relative 'score_database'
 
 class Scores
-
   attr_accessor :current_scores
 
   def initialize
@@ -27,9 +27,24 @@ class Scores
   end
 
   def get_round_scores
+    score_text = ""
     current_scores.each { |score|
-      p "#{score.id} - #{score.name} - #{score.points}"
+      score_text += "#{score.id} - #{score.name} - #{score.points}"
     }
+
+    return score_text
+  end
+
+  def get_top_scores(scores_to_get)
+    #TODO: Show top x scores
+  end
+
+  def merge_into_global
+    #TODO: Merge round scores into global scores, then wipe Round scores (to be used after a round/match is over)
+  end
+
+  def clear
+    self.current_scores = []
   end
 
 end

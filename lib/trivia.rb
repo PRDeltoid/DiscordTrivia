@@ -25,8 +25,8 @@ class Trivia
   def start
     #only run this method if trivia is NOT already running
     if not running?
-      messenger.send_message("Starting")
       self.running = true
+      messenger.send_message("Starting")
 
       setup_question
 
@@ -44,8 +44,13 @@ class Trivia
     #only run this method if trivia is already running
     if running?
       messenger.send_message("Stopping")
+      messenger.send_message(scores.get_round_scores)
+
+      scores.clear
+      self.current_question = nil
+
       self.running = false
-      scheduler.shutdown
+      scheduler.jobs.each(&:unschedule)
     end
   end
 
@@ -76,7 +81,6 @@ class Trivia
           current_question.mark_answered
 
           scores.update(event.user, 1) #Hardcoded point value (1)
-          scores.get_round_scores
 
           scheduler.unschedule(timeout)
         end

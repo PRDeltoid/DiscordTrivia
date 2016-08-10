@@ -9,7 +9,9 @@ class Messenger
   end
 
   def send_message(message)
-    command_bot.send_message(channel, message)
+    if message != "" and message != nil
+      command_bot.send_message(channel, message)
+    end
   end
 
   def set_channel(channel)
