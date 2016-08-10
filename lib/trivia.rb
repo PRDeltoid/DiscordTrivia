@@ -1,4 +1,5 @@
 require_relative 'question_factory'
+require_relative 'scores'
 
 class Trivia
   attr_accessor :question_factory,
@@ -7,7 +8,8 @@ class Trivia
 
   attr_reader   :messenger,
                 :bot,
-                :scheduler
+                :scheduler,
+                :scores
 
   def initialize(trivia_bot, messenger)
     @question_factory = QuestionFactory.new
@@ -17,6 +19,7 @@ class Trivia
     @messenger        = messenger
     @running          = false
     @scheduler        = Rufus::Scheduler.new
+    @scores           = Scores.new
   end
 
   def start
@@ -69,13 +72,16 @@ class Trivia
   def generate_await_function(timeout)
     await_function = Proc.new do |event|
         if running?
-          messenger.send_message("Correct #{event.user.display_name}.")
+          messenger.send_message("Correct #{event.user.username}.")
           current_question.mark_answered
+
+          scores.update(event.user, 1) #Hardcoded point value (1)
+          scores.get_round_scores
+
           scheduler.unschedule(timeout)
         end
     end
   end
-
 
   def get_question
     #Generate question if none exists
