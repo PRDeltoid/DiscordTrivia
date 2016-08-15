@@ -26,10 +26,13 @@ class Trivia
     #only run this method if trivia is NOT already running
     if not running?
       self.running = true
+
       messenger.send_message("Starting")
 
       setup_question
 
+      #Keep checking to see if the current question gets answered
+      #so we can ask the next one
       scheduler.every '2s' do
         if current_question.answered?
           next_question
@@ -46,9 +49,9 @@ class Trivia
       messenger.send_message("Stopping")
       messenger.send_message(scores.get_round_scores)
 
-      scores.clear
+      #RESET EVERYTHING
+      scores.merge_into_global
       self.current_question = nil
-
       self.running = false
       scheduler.jobs.each(&:unschedule)
     end
@@ -56,8 +59,7 @@ class Trivia
 
   def setup_question
     question = get_question
-
-    p question.answer
+    p question.answer #TODO: Remove this
 
     #Ask the question
     messenger.send_message(question.question)
@@ -68,9 +70,9 @@ class Trivia
       current_question.mark_answered
     end
 
+    #Create the answer trigger
     await_function = generate_await_function(timeout)
-
-    bot.add_await({:content => current_question.answer, 
+    bot.add_await({:content => current_question.answer,
                    :await_function => await_function})
   end
 

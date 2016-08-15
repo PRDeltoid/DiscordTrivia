@@ -3,10 +3,12 @@ require_relative 'score'
 require_relative 'score_database'
 
 class Scores
-  attr_accessor :current_scores
+  attr_accessor :current_scores, :score_db
 
   def initialize
     @current_scores = []
+    @score_db = Score_Database.new
+    score_db.connect
   end
 
   def update(user, points)
@@ -40,7 +42,8 @@ class Scores
   end
 
   def merge_into_global
-    #TODO: Merge round scores into global scores, then wipe Round scores (to be used after a round/match is over)
+    score_db.merge_scores(current_scores)
+    clear
   end
 
   def clear
