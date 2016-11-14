@@ -14,7 +14,7 @@ class Bot
   attr_reader   :messenger
 
   def initialize
-    #generate bot
+    # Generate bot
     @command_bot = Discordrb::Commands::CommandBot.new(
       token:          $config.get('token'),
       application_id: $config.get('appid'),
@@ -24,27 +24,30 @@ class Bot
     @messenger  = Messenger.new(self)
     @trivia     = Trivia.new(self, messenger)
 
+    setup_commands
+  end
+
+  def setup_commands
     command_bot.command :trivia do |event, command|
       channel_id = event.channel.id
       case command
-        when "start"
-          messenger.set_channel(channel_id)
-          trivia.start
-          return
-        when "stop"
-          trivia.stop
-          return
-        else
-          "Unknown Command"
+      when 'start'
+        messenger.channel = channel_id
+        trivia.start
+      when 'stop'
+        trivia.stop
+      else
+        'Unknown Command'
       end
+      return
     end
   end
 
   def add_await(args)
     command_bot.add_await(:question,
-                           Discordrb::Events::MessageEvent, 
-                           {content: /#{args[:content]}/i}) { |event|
+                          Discordrb::Events::MessageEvent,
+                          content: /#{args[:content]}/i) do |event|
       args[:await_function].call(event)
-    }
+    end
   end
 end

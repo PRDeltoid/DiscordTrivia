@@ -12,4 +12,3 @@ class Configuration
     config.fetch(attrib_key, nil)
   end
 end
-

@@ -1,0 +1,6 @@
+Style/TrivialAccessors:
+  Enabled: false
+Style/GlobalVars:
+  Enabled: false
+Documentation:
+  Enabled: false

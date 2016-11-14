@@ -6,11 +6,10 @@ class Score
   def initialize(name, id, points = 0)
     @name   = name
     @id     = id
-    @points = points 
+    @points = points
   end
 
   def increase_score(amount = 0)
     self.points += amount
   end
 end
-

@@ -23,16 +23,16 @@ class Trivia
   end
 
   def start
-    #only run this method if trivia is NOT already running
-    if not running?
+    # only run this method if trivia is NOT already running
+    unless running?
       self.running = true
 
-      messenger.send_message("Starting")
+      messenger.send_message('Starting')
 
       setup_question
 
-      #Keep checking to see if the current question gets answered
-      #so we can ask the next one
+      # Keep checking to see if the current question gets answered
+      # so we can ask the next one
       scheduler.every '2s' do
         if current_question.answered?
           next_question
@@ -44,12 +44,12 @@ class Trivia
   end
 
   def stop
-    #only run this method if trivia is already running
+    # only run this method if trivia is already running
     if running?
-      messenger.send_message("Stopping")
-      messenger.send_message(scores.get_round_scores)
+      messenger.send_message('Stopping')
+      messenger.send_message(scores.round_scores)
 
-      #RESET EVERYTHING
+      # RESET EVERYTHING
       scores.merge_into_global
       self.current_question = nil
       self.running = false
@@ -59,39 +59,39 @@ class Trivia
 
   def setup_question
     question = get_question
-    p question.answer #TODO: Remove this
+    p question.answer # TODO: Remove this
 
-    #Ask the question
+    # Ask the question
     messenger.send_message(question.question)
 
-    #Question Timeout Timer
+    # Question Timeout Timer
     timeout = scheduler.in '1m' do
       messenger.send_message("Times up! The answer was #{question.answer}")
       current_question.mark_answered
     end
 
-    #Create the answer trigger
+    # Create the answer trigger
     await_function = generate_await_function(timeout)
-    bot.add_await({:content => current_question.answer,
-                   :await_function => await_function})
+    bot.add_await(content:        current_question.answer,
+                  await_function: await_function)
   end
 
   def generate_await_function(timeout)
-    await_function = Proc.new do |event|
-        if running?
-          messenger.send_message("Correct #{event.user.username}.")
-          current_question.mark_answered
+    proc do |event|
+      if running?
+        messenger.send_message("Correct #{event.user.username}.")
+        current_question.mark_answered
 
-          scores.update(event.user, 1) #Hardcoded point value (1)
+        scores.update(event.user, 1) # Hardcoded point value (1)
 
-          scheduler.unschedule(timeout)
-        end
+        scheduler.unschedule(timeout)
+      end
     end
   end
 
   def get_question
-    #Generate question if none exists
-    if current_question == nil then
+    # Generate question if none exists
+    if current_question.nil?
       self.current_question = question_factory.new_question
     else
       current_question
@@ -103,6 +103,6 @@ class Trivia
   end
 
   def running?
-    self.running ? true : false
+    running ? true : false
   end
 end

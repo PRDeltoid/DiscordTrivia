@@ -1,6 +1,6 @@
 require_relative 'database'
 
-class Question_Database < Database
+class QuestionDatabase < Database
   attr_accessor :question_table,
                 :question_count
 
@@ -12,11 +12,11 @@ class Question_Database < Database
 
   def connect
     super()
-    self.question_count = client.query("SELECT COUNT(*) AS question_count FROM #{question_table}").first["question_count"]
+    self.question_count = client.query("SELECT COUNT(*) AS question_count
+                                        FROM #{question_table}").first['question_count']
   end
 
   def select_row(row_num)
-    return client.query("SELECT * FROM #{question_table} where id=#{row_num}").first
+    client.query("SELECT * FROM #{question_table} where id=#{row_num}").first
   end
-
 end
