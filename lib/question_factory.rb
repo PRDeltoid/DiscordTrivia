@@ -22,6 +22,7 @@ class QuestionFactory
     Question.new(question: question['question'],
                  answer:   question['answer'],
                  hints:    generate_hints('Bar'))
+
   end
 
   # Temporary hardcoding of simple hints for above question.
