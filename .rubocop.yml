@@ -2,5 +2,7 @@ Style/TrivialAccessors:
   Enabled: false
 Style/GlobalVars:
   Enabled: false
+Style/RedundantReturn:
+  Enabled: false
 Documentation:
   Enabled: false

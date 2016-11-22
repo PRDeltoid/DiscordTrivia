@@ -58,25 +58,38 @@ class Trivia
   end
 
   def setup_question
-    question = get_question
-    p question.answer # TODO: Remove this
+    current_question = pull_question
+    p current_question.answer # TODO: Remove this
 
     # Ask the question
-    messenger.send_message(question.question)
+    messenger.send_message(current_question.question)
 
-    # Question Timeout Timer
-    timeout = scheduler.in '1m' do
-      messenger.send_message("Times up! The answer was #{question.answer}")
-      current_question.mark_answered
-    end
+    timeout    = generate_question_timer
+    hint_timer = generate_hint_timer
 
     # Create the answer trigger
-    await_function = generate_await_function(timeout)
+    await_function = generate_await_function(timeout, hint_timer)
     bot.add_await(content:        current_question.answer,
                   await_function: await_function)
   end
 
-  def generate_await_function(timeout)
+  def generate_hint_timer
+    seconds = 45 / current_question.hint_num
+
+    scheduler.every "#{seconds}s", 'last_in' => '1m' do
+      messenger.send_message(current_question.hint)
+      current_question.next_hint
+    end
+  end
+
+  def generate_question_timer
+    scheduler.in '1m' do
+      messenger.send_message("Times up! The answer was #{current_question.answer}")
+      current_question.mark_answered
+    end
+  end
+
+  def generate_await_function(timeout, hint_timer)
     proc do |event|
       if running?
         messenger.send_message("Correct #{event.user.username}.")
@@ -85,11 +98,12 @@ class Trivia
         scores.update(event.user, 1) # Hardcoded point value (1)
 
         scheduler.unschedule(timeout)
+        scheduler.unschedule(hint_timer)
       end
     end
   end
 
-  def get_question
+  def pull_question
     # Generate question if none exists
     if current_question.nil?
       self.current_question = question_factory.new_question

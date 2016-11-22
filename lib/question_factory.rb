@@ -1,5 +1,6 @@
 require_relative 'question'
 require_relative 'question_database'
+require_relative 'hint_factory'
 # require 'random'
 
 class QuestionFactory
@@ -16,22 +17,16 @@ class QuestionFactory
     # Find row with id = to previous number
     question = database.select_row(random_row)
 
+    # Remove all special characters
     question['question'] = question['question'].gsub(/[^0-9a-z ]/i, '')
     question['answer'] = question['answer'].gsub(/[^0-9a-z ]/i, '')
 
+    # Generate hint array
+    hints = HintFactory.generate_hints(question['answer'])
+
     Question.new(question: question['question'],
                  answer:   question['answer'],
-                 hints:    generate_hints('Bar'))
-
-  end
-
-  # Temporary hardcoding of simple hints for above question.
-  # This method will need to determine the amount of hints
-  # needed depending on the question's answer difficulty
-  # Short answers do not need as many hints as long answers
-  # Should have some sort of limit on possible hints to generate,
-  # to prevent small hints from being given rapidly
-  def generate_hints(_answer)
-    ['B__', 'B_r B_r']
+                 hints:    hints['hints'],
+                 hint_num: hints['hint_num'])
   end
 end
