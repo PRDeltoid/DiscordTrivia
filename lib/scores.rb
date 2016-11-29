@@ -29,12 +29,12 @@ class Scores
   end
 
   def round_scores
-    score_text = ''
+    score_text = ""
     current_scores.each do |score|
-      score_text += "#{score.id} - #{score.name} - #{score.points}"
+      score_text += "#{score.id} - #{score.name} - #{score.points}\n"
     end
 
-    score_text
+    return "`#{score_text}`"
   end
 
   def top_scores(scores_to_get)
