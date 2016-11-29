@@ -6,7 +6,7 @@ class QuestionDatabase < Database
 
   def initialize
     super()
-    @question_table = $config.get('question_table')
+    @question_table = Configuration.get('question_table')
     @question_count = 0
   end
 

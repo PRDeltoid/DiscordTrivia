@@ -16,9 +16,9 @@ class Bot
   def initialize
     # Generate bot
     @command_bot = Discordrb::Commands::CommandBot.new(
-      token:          $config.get('token'),
-      application_id: $config.get('appid'),
-      prefix:         $config.get('prefix')
+      token:          Configuration.get('token'),
+      application_id: Configuration.get('appid'),
+      prefix:         Configuration.get('prefix')
     )
 
     @messenger  = Messenger.new(self)

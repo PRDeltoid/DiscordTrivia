@@ -13,8 +13,8 @@ class Database
 
   def connect
     self.client = Mysql2::Client.new(host:     'localhost',
-                                     username: $config.get('username'),
-                                     password: $config.get('password'),
-                                     database: $config.get('database'))
+                                     username: Configuration.get('username'),
+                                     password: Configuration.get('password'),
+                                     database: Configuration.get('database'))
   end
 end

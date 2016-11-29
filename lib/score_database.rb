@@ -5,7 +5,7 @@ class ScoreDatabase < Database
 
   def initialize
     super()
-    @score_table = $config.get('score_table')
+    @score_table = Configuration.get('score_table')
   end
 
   def merge_scores(score_array)

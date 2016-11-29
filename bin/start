@@ -4,8 +4,6 @@ $LOAD_PATH << 'lib'
 require 'bot'
 require 'config'
 
-$config = Configuration.new('config.json')
-
 triviabot = Bot.new
 
 triviabot.command_bot.run
