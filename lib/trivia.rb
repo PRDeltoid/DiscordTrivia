@@ -74,9 +74,13 @@ class Trivia
   end
 
   def generate_hint_timer
-    seconds = 45 / current_question.hint_num
+    p seconds = 60 / current_question.hint_num
 
-    scheduler.every "#{seconds}s", 'last_in' => '1m' do
+    # Print the first (empty) hint and move to the first real hint
+    messenger.send_message(current_question.hint)
+    current_question.next_hint
+
+    scheduler.every "#{seconds}s", 'last_in' => '75s' do
       messenger.send_message(current_question.hint)
       current_question.next_hint
     end
