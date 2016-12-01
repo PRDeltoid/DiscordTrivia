@@ -8,11 +8,11 @@ class HintFactory
     hint_num = hint_num < 6 ? hint_num : 6
 
     hints = []
-    hints << "`#{last_hint}`" 
+    hints << "#{last_hint}" 
     (0..hint_num - 1).each do
       # Add backticks to prevent Discord markdown formatting
       last_hint = replace_letters(answer, last_hint)
-      hints << "`#{last_hint}`"
+      hints << "#{last_hint}"
     end
 
     p hints

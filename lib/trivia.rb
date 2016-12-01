@@ -47,7 +47,7 @@ class Trivia
     # only run this method if trivia is already running
     if running?
       messenger.send_message('Stopping')
-      messenger.send_message(scores.round_scores)
+      messenger.send_message(scores.round_scores, '`')
 
       # RESET EVERYTHING
       scores.merge_into_global
@@ -77,11 +77,11 @@ class Trivia
     p seconds = 60 / current_question.hint_num
 
     # Print the first (empty) hint and move to the first real hint
-    messenger.send_message(current_question.hint)
+    messenger.send_message(current_question.hint, '`')
     current_question.next_hint
 
     scheduler.every "#{seconds}s", 'last_in' => '75s' do
-      messenger.send_message(current_question.hint)
+      messenger.send_message(current_question.hint, '`')
       current_question.next_hint
     end
   end

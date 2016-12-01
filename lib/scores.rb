@@ -34,7 +34,7 @@ class Scores
       score_text += "#{score.id} - #{score.name} - #{score.points}\n"
     end
 
-    return "`#{score_text}`"
+    return "#{score_text}"
   end
 
   def top_scores(scores_to_get)
