@@ -8,7 +8,7 @@ class Messenger
     @command_bot = trivia_bot.command_bot
   end
 
-  def send_message(message, emphasis='')
+  def send_message(message, emphasis = '')
     return false if message == '' || message.nil?
     message = "#{emphasis}#{message}#{emphasis}"
     command_bot.send_message(channel, message)
