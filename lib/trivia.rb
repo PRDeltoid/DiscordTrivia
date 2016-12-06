@@ -74,7 +74,7 @@ class Trivia
   end
 
   def generate_hint_timer
-    p seconds = 60 / current_question.hint_num
+    p seconds = 75 / current_question.hint_num
 
     # Print the first (empty) hint and move to the first real hint
     messenger.send_message(current_question.hint, '`')

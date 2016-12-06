@@ -2,9 +2,15 @@ class HintFactory
   FILLER_CHAR = '-'.freeze
 
   def self.generate_hints(answer)
-    hint_num = (answer.length / 5.0).ceil
-    # Hardcoded 6 MAX HINTS
-    hint_num = hint_num < 6 ? hint_num : 6
+    if answer.length < 5
+      hint_letters = 1
+      hint_num = 1
+    else
+      hint_letters = (answer.length / 4.0).ceil
+      hint_num = (answer.length / hint_letters).floor
+    end
+
+    p answer.length, hint_letters, hint_num
 
     # blank starting hint
     last_hint = answer.gsub(/[^ ]/, FILLER_CHAR)
@@ -12,8 +18,8 @@ class HintFactory
     hints = []
     hints << last_hint.clone
 
-    (0..hint_num - 1).each do
-      last_hint = replace_letters(answer, last_hint)
+    (1..hint_num-2).each do
+      last_hint = replace_letters(answer, last_hint, hint_letters)
       hints << last_hint.clone
     end
 
@@ -21,10 +27,10 @@ class HintFactory
     return { 'hints' => hints, 'hint_num' => hint_num }
   end
 
-  def self.replace_letters(answer, last_hint)
+  def self.replace_letters(answer, last_hint, hint_letters)
     letters_done = 0
     # replace three spaces in the hint with letters
-    while letters_done < 3
+    while letters_done < hint_letters
       rand = Random.rand(0..answer.length)
       # if the location contains an underscore, increase letters counter
       if last_hint[rand] == FILLER_CHAR
