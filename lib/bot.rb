@@ -1,11 +1,13 @@
 require 'json'
 require 'discordrb'
 require 'rufus-scheduler'
+require 'observer'
 require_relative 'trivia'
 require_relative 'messenger'
 require_relative 'config'
 
 class Bot
+  include Observable
   attr_accessor :command_bot,
                 :trivia,
                 :running,
@@ -30,15 +32,11 @@ class Bot
   def setup_commands
     command_bot.command :trivia do |event, command|
       channel_id = event.channel.id
-      case command
-      when 'start'
-        messenger.channel = channel_id
-        trivia.start
-      when 'stop'
-        trivia.stop
-      else
-        'Unknown Command'
-      end
+      messenger.channel = channel_id
+
+      #Notify objects capable of receiving commands
+      changed
+      notify_observers(command, channel_id)
       return
     end
   end

@@ -20,6 +20,17 @@ class Trivia
     @running          = false
     @scheduler        = Rufus::Scheduler.new
     @scores           = Scores.new
+
+    trivia_bot.add_observer(self)
+  end
+
+  def update(command, channel_id)
+    p "here"
+    if command == "start"
+      start
+    elsif command == "stop"
+      stop
+    end
   end
 
   def start
