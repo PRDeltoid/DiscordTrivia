@@ -18,8 +18,8 @@ class QuestionFactory
     question = database.select_row(random_row)
 
     # Remove all special characters
-    question['question'] = question['question'].gsub(/[^0-9a-z ]/i, '')
-    question['answer'] = question['answer'].gsub(/[^0-9a-z ]/i, '')
+    question['question'] = question['question'].gsub(/[^0-9a-z\\-\\?\\! ]/i, '')
+    question['answer'] = question['answer'].gsub(/[^0-9a-z\\-\\?\\! ]/i, '')
 
     # Generate hint array
     hints = HintFactory.generate_hints(question['answer'])
