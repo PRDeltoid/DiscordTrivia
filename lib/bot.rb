@@ -34,9 +34,11 @@ class Bot
       channel_id = event.channel.id
       messenger.channel = channel_id
 
-      #Notify objects capable of receiving commands
+      # Notify objects capable of receiving commands
       changed
-      notify_observers(command, channel_id)
+      notify_observers(command)
+      # Empty return so the bot doesn't output to chat 
+      # (returned values are normally sent to chat)
       return
     end
   end

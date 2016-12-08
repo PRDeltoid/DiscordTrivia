@@ -24,11 +24,10 @@ class Trivia
     trivia_bot.add_observer(self)
   end
 
-  def update(command, channel_id)
-    p "here"
-    if command == "start"
+  def update(command)
+    if command == 'start'
       start
-    elsif command == "stop"
+    elsif command == 'stop'
       stop
     end
   end
@@ -44,13 +43,12 @@ class Trivia
 
       # Keep checking to see if the current question gets answered
       # so we can ask the next one
-      scheduler.every '2s' do
+      scheduler.every '1s' do
         if current_question.answered?
           next_question
           setup_question
         end
       end
-
     end
   end
 
