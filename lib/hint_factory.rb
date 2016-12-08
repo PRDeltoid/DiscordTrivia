@@ -18,12 +18,11 @@ class HintFactory
     hints = []
     hints << last_hint.clone
 
-    (1..hint_num-2).each do
+    (1..hint_num - 2).each do
       last_hint = replace_letters(answer, last_hint, hint_letters)
       hints << last_hint.clone
     end
 
-    p hints
     return { 'hints' => hints, 'hint_num' => hint_num }
   end
 
