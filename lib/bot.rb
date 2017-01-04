@@ -5,6 +5,7 @@ require 'observer'
 require_relative 'trivia'
 require_relative 'messenger'
 require_relative 'config'
+require_relative 'reporter'
 
 class Bot
   include Observable
@@ -24,20 +25,20 @@ class Bot
     )
 
     @messenger  = Messenger.new(self)
-    @trivia     = Trivia.new(self, messenger)
+    @trivia     = Trivia.new(self)
+    @reporter   = Reporter.new(self)
 
     setup_commands
   end
 
   def setup_commands
     command_bot.command :trivia do |event, command|
-      channel_id = event.channel.id
-      messenger.channel = channel_id
+      messenger.channel = event.channel.id
 
       # Notify objects capable of receiving commands
       changed
       notify_observers(command)
-      # Empty return so the bot doesn't output to chat 
+      # Empty return so the bot doesn't output to chat
       # (returned values are normally sent to chat)
       return
     end

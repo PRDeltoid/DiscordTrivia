@@ -1,4 +1,5 @@
 require 'mysql2'
+require 'config'
 
 class Database
   attr_accessor :client
