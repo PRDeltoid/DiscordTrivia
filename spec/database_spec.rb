@@ -1,7 +1,4 @@
-require 'config'
 require 'database'
-
-$config = Configuration.new('config.json')
 
 RSpec.describe Database do
   describe '#connected?' do
