@@ -34,10 +34,12 @@ class Bot
   def setup_commands
     command_bot.command :trivia do |event, command|
       messenger.channel = event.channel.id
+      userid = event.message.author.id
 
       # Notify objects capable of receiving commands
+      command_out = { command: command, userid: userid }
       changed
-      notify_observers(command)
+      notify_observers(command_out)
       # Empty return so the bot doesn't output to chat
       # (returned values are normally sent to chat)
       return

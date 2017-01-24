@@ -19,11 +19,11 @@ class Scores
       score.id == user_id
     end
 
-    # User doesn't exist, add them to the score list
     if score_index.nil?
+      # User doesn't exist, add them to the score list
       current_scores.push(Score.new(username, user_id, points))
     else
-    # User does exist, update their score
+      # User does exist, update their score
       current_scores[score_index].increase_score(points)
     end
   end
@@ -48,5 +48,9 @@ class Scores
 
   def clear
     self.current_scores = []
+  end
+
+  def active_players
+    return current_scores.length
   end
 end

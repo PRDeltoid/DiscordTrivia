@@ -1,6 +1,7 @@
 require_relative 'question_factory'
 require_relative 'timers'
 require_relative 'scores'
+require_relative 'voter'
 
 class Trivia
   attr_accessor :question_factory,
@@ -11,7 +12,8 @@ class Trivia
   attr_reader   :messenger,
                 :bot,
                 :scheduler,
-                :scores
+                :scores,
+                :voter
 
   def initialize(bot)
     @question_factory = QuestionFactory.new
@@ -23,17 +25,20 @@ class Trivia
     @scheduler        = Rufus::Scheduler.new
     @scores           = Scores.new
     @timers           = TimerContainer.new(self)
+    @voter            = Voter.new
 
     bot.add_observer(self)
   end
 
-  def update(command)
+  def update(command_in)
+    command = command_in.fetch(:command)
+    userid  = command_in.fetch(:userid)
     if command == 'start'
       start
     elsif command == 'stop'
       stop
     elsif command == 'skip'
-      skip
+      skip(userid)
     elsif command == 'exit'
       exit
     end
@@ -51,11 +56,7 @@ class Trivia
       # Keep checking to see if the current question gets answered
       # so we can ask the next one
       scheduler.every '1s' do
-        if current_question.answered?
-          timers.unschedule_all
-          next_question
-          setup_question
-        end
+        question_completed if current_question.answered?
       end
     end
   end
@@ -74,18 +75,29 @@ class Trivia
     end
   end
 
-  def skip
+  def skip(userid)
     if running?
-      messenger.send_message('Skipping')
-      timers.unschedule_all
-      next_question
-      setup_question
+      # User already voted, skip the rest of the function
+      return if voter.vote(userid) == false
+
+      if voter.passed?
+        messenger.send_message('Vote passed. Skipping.')
+        question_completed
+      else
+        messenger.send_message("#{voter.current_votes} vote(s) to skip. #{voter.threshold} needed.")
+      end
     end
   end
 
   def exit
     stop if running?
     bot.stop
+  end
+
+  def question_completed
+    timers.unschedule_all
+    next_question
+    setup_question
   end
 
   def setup_question
@@ -98,6 +110,9 @@ class Trivia
     timers.generate_question_timer
     timers.generate_hint_timer
 
+    voter.reset
+    voter.threshold = 2 # Temporary Hard Coding. Normally (scores.active_players / 3.0).floor
+
     # Create the answer trigger
     await_function = generate_await_function # (time_out, hint_timer)
     bot.add_await(content:        current_question.answer,
@@ -107,7 +122,6 @@ class Trivia
   def generate_await_function
     proc do |event|
       if running?
-        timers.unschedule_all
         messenger.send_message("Correct #{event.user.username}.")
         current_question.mark_answered
 
