@@ -11,10 +11,10 @@ class Reporter
   end
 
   def update(command)
-    if command == "report"
+    if command == 'report'
       report_string = "#{trivia.current_question.question} - #{trivia.current_question.answer}"
       Logger.log(report_string, :report)
-      messenger.send_message("This question has been reported.")
+      messenger.send_message('This question has been reported.')
     end
   end
 end

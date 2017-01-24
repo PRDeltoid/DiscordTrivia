@@ -10,7 +10,7 @@ class HintFactory
       hint_num = (answer.length / hint_letters).floor
     end
 
-    p answer.length, hint_letters, hint_num
+    p "Length #{answer.length}, Letters: #{hint_letters}, Num: #{hint_num}"
 
     # blank starting hint
     last_hint = answer.gsub(/[^ ]/, FILLER_CHAR)
@@ -18,10 +18,12 @@ class HintFactory
     hints = []
     hints << last_hint.clone
 
-    (1..hint_num - 2).each do
+    (1..hint_num - 1).each do
       last_hint = replace_letters(answer, last_hint, hint_letters)
       hints << last_hint.clone
     end
+
+    p "Hint Length True: #{hints.length}"
 
     return { 'hints' => hints, 'hint_num' => hint_num }
   end

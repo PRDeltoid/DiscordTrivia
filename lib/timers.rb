@@ -9,14 +9,17 @@ class TimerContainer
     @trivia = trivia
     @messenger = trivia.messenger
     @scheduler = trivia.scheduler
-    @hint_timer
-    @timeout_timer
   end
 
   def unschedule_all
-    if hint_timer == nil || timeout_timer == nil then return end
-    scheduler.unschedule(hint_timer)
-    scheduler.unschedule(timeout_timer)
+    unless hint_timer.nil?
+      scheduler.unschedule(hint_timer)
+      self.hint_timer = nil
+    end
+    unless timeout_timer.nil?
+      scheduler.unschedule(timeout_timer)
+      self.timeout_timer = nil
+    end
   end
 
   def current_question
@@ -24,23 +27,24 @@ class TimerContainer
   end
 
   def generate_hint_timer
-    p "Seconds: #{seconds = 75 / current_question.hint_num}"
+    seconds = 75 / current_question.hint_num
+    p "Seconds: #{seconds}"
 
     # Print the first (empty) hint and move to the first real hint
     messenger.send_message(current_question.hint, '`')
     current_question.next_hint
 
-    hint_timer = scheduler.every "#{seconds}s", 'last_in' => '75s' do
+    self.hint_timer = scheduler.every "#{seconds}s", 'last_in' => '75s' do
       messenger.send_message(current_question.hint, '`')
       current_question.next_hint
     end
   end
 
   def generate_question_timer
-    timeout_timer = scheduler.in '1m' do
+    self.timeout_timer = scheduler.in '75s' do
+      unschedule_all
       messenger.send_message("Times up! The answer was #{current_question.answer}")
       current_question.mark_answered
     end
   end
-
 end

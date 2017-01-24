@@ -1,13 +1,13 @@
 class Logger
   TYPES = {
-    test:     "test.txt",
-    report:   "reports.txt",
-    error:    "errors.txt",
-    warn:     "warnings.txt"
-  }
+    test:     'test.txt',
+    report:   'reports.txt',
+    error:    'errors.txt',
+    warn:     'warnings.txt'
+  }.freeze
 
   def self.log(message, type)
-    if !TYPES.has_key?(type) then raise "No type with name #{type.id2name} found" end
+    raise "No type #{type.id2name} found" unless TYPES.key?(type)
 
     log = File.open(TYPES[type], 'a')
 
