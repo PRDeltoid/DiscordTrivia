@@ -1,27 +1,30 @@
 require_relative 'question_factory'
+require_relative 'timers'
 require_relative 'scores'
 
 class Trivia
   attr_accessor :question_factory,
                 :current_question,
-                :running
+                :running,
+                :timers
 
   attr_reader   :messenger,
                 :bot,
                 :scheduler,
                 :scores
 
-  def initialize(trivia_bot, messenger)
+  def initialize(bot)
     @question_factory = QuestionFactory.new
     @current_question = nil
 
-    @bot              = trivia_bot
-    @messenger        = messenger
+    @bot              = bot
+    @messenger        = bot.messenger
     @running          = false
     @scheduler        = Rufus::Scheduler.new
     @scores           = Scores.new
+    @timers           = TimerContainer.new(self)
 
-    trivia_bot.add_observer(self)
+    bot.add_observer(self)
   end
 
   def update(command)
@@ -45,6 +48,7 @@ class Trivia
       # so we can ask the next one
       scheduler.every '1s' do
         if current_question.answered?
+          timers.unschedule_all
           next_question
           setup_question
         end
@@ -73,45 +77,23 @@ class Trivia
     # Ask the question
     messenger.send_message(current_question.question)
 
-    timeout    = generate_question_timer
-    hint_timer = generate_hint_timer
+    timers.generate_question_timer
+    timers.generate_hint_timer
 
     # Create the answer trigger
-    await_function = generate_await_function(timeout, hint_timer)
+    await_function = generate_await_function # (time_out, hint_timer)
     bot.add_await(content:        current_question.answer,
                   await_function: await_function)
   end
 
-  def generate_hint_timer
-    p seconds = 75 / current_question.hint_num
-
-    # Print the first (empty) hint and move to the first real hint
-    messenger.send_message(current_question.hint, '`')
-    current_question.next_hint
-
-    scheduler.every "#{seconds}s", 'last_in' => '75s' do
-      messenger.send_message(current_question.hint, '`')
-      current_question.next_hint
-    end
-  end
-
-  def generate_question_timer
-    scheduler.in '1m' do
-      messenger.send_message("Times up! The answer was #{current_question.answer}")
-      current_question.mark_answered
-    end
-  end
-
-  def generate_await_function(timeout, hint_timer)
+  def generate_await_function
     proc do |event|
       if running?
+        timers.unschedule_all
         messenger.send_message("Correct #{event.user.username}.")
         current_question.mark_answered
 
         scores.update(event.user, 1) # Hardcoded point value (1)
-
-        scheduler.unschedule(timeout)
-        scheduler.unschedule(hint_timer)
       end
     end
   end
