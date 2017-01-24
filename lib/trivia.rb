@@ -32,6 +32,10 @@ class Trivia
       start
     elsif command == 'stop'
       stop
+    elsif command == 'skip'
+      skip
+    elsif command == 'exit'
+      exit
     end
   end
 
@@ -68,6 +72,20 @@ class Trivia
       self.running = false
       scheduler.jobs.each(&:unschedule)
     end
+  end
+
+  def skip
+    if running?
+      messenger.send_message('Skipping')
+      timers.unschedule_all
+      next_question
+      setup_question
+    end
+  end
+
+  def exit
+    stop if running?
+    bot.stop
   end
 
   def setup_question

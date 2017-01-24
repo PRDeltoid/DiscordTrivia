@@ -51,4 +51,8 @@ class Bot
       args[:await_function].call(event)
     end
   end
+
+  def stop
+    command_bot.stop
+  end
 end
